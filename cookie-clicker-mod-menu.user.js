@@ -535,16 +535,8 @@
     })
 
     gamePromise.then(() => {
-        var ognote =  Game.Note;
-        Game.Note = function(title,desc,pic,quick)
-		{
-            var exclusionsTitle = ["Thou doth ruineth the fun!"]
-            if (exclusionsTitle.includes(title)) return;
-            ognote(title, desc, pic, quick);
-        }
         document.getElementById("hack-finish-game").addEventListener("click", (e) => {
             Game.RuinTheFun(true);
-
         })
     })
 
