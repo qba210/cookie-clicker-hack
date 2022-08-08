@@ -1,6 +1,6 @@
 // ==UserScript==
-// @name         Cookie Clicker Hack
-// @namespace    https://github.com/qba210/cookie-clicker-hack
+// @name         Cookie Clicker Mod Menu
+// @namespace    https://github.com/qba210/cookie-clicker-mod-menu
 // @version      1.0
 // @description  Mod menu for Cookie Clicker
 // @author       qba210
@@ -19,7 +19,7 @@
          * @param {object} msg 
          */
         static LogInfo(msg) {
-            console.log("\n[Hack] " + msg);
+            console.log("\n[Mod Menu] " + msg);
         }
 
         /**
