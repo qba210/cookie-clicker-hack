@@ -1,4 +1,4 @@
-# Cookie clicker hack
+# Cookie clicker mod menu
 [install userscript](https://raw.githubusercontent.com/qba210/cookie-clicker-mod-menu/master/cookieclickerhack.user.js) | [GreasyFork page](https://greasyfork.org/pl/scripts/449170-cookie-clicker-hack) | [report bug/issue](https://github.com/qba210/cookie-clicker-hack/issues)
 \
 &nbsp;
