@@ -1,5 +1,5 @@
 # Cookie clicker hack
-[install userscript](https://raw.githubusercontent.com/qba210/cookie-clicker-hack/master/cookieclickerhack.user.js) | [GreasyFork page]() 
+[install userscript](https://raw.githubusercontent.com/qba210/cookie-clicker-hack/master/cookieclickerhack.user.js) | [GreasyFork page]() | [report bug/issue](https://github.com/qba210/cookie-clicker-hack/issues)
 \
 &nbsp; <!--it's line break-->
 
