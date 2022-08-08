@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Cookie Clicker Hack
 // @namespace    https://github.com/qba210/cookie-clicker-hack
-// @version      1
+// @version      1.0
 // @description  Mod menu for Cookie Clicker
 // @author       qba210
 // @license      MIT
