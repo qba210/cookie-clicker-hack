@@ -1,7 +1,7 @@
 # Cookie clicker hack
-[install userscript](https://raw.githubusercontent.com/qba210/cookie-clicker-hack/master/cookieclickerhack.user.js) | [GreasyFork page]() | [report bug/issue](https://github.com/qba210/cookie-clicker-hack/issues)
+[install userscript](https://raw.githubusercontent.com/qba210/cookie-clicker-hack/master/cookieclickerhack.user.js) | [GreasyFork page](https://greasyfork.org/pl/scripts/449170-cookie-clicker-hack) | [report bug/issue](https://github.com/qba210/cookie-clicker-hack/issues)
 \
-&nbsp; <!--it's line break-->
+&nbsp;
 
 ## features
 - Set amount of cookies
@@ -11,7 +11,7 @@
 ## installation
 
 ### For userscript manager (Recommended)
-- Click [here](https://raw.githubusercontent.com/qba210/cookie-clicker-hack/master/cookieclickerhack.user.js) <!-- or visit [GreasyFork]() page -->
+- Click [here](https://raw.githubusercontent.com/qba210/cookie-clicker-hack/master/cookieclickerhack.user.js) or visit [GreasyFork](https://greasyfork.org/pl/scripts/449170-cookie-clicker-hack) page
 
 ### Without userscript manager
 - Copy this:
