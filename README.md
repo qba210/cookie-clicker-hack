@@ -6,7 +6,10 @@
 ## features
 - Set amount of cookies
 - Access developer menu
-- Unlock any achievement
+- Unlock or revoke any achievement
+- Set amount of any object
+- Autoclicker
+- Finish and max the game
 
 ## installation
 

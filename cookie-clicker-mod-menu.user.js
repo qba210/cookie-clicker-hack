@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Cookie Clicker Mod Menu
 // @namespace    https://github.com/qba210/cookie-clicker-mod-menu
-// @version      1.0
+// @version      1.1
 // @description  Mod menu for Cookie Clicker
 // @author       qba210
 // @license      MIT
@@ -19,7 +19,7 @@
          * @param {object} msg 
          */
         static LogInfo(msg) {
-            console.log("\n[Mod Menu] " + msg);
+            console.log("\n[Mod Menu] ", msg);
         }
 
         /**
@@ -27,7 +27,7 @@
          * @param {object} msg 
          */
         static LogDebug(msg) {
-            this.LogInfo(msg);
+            Logger.LogInfo(msg);
         }
     }
 
@@ -46,6 +46,10 @@
                     name: "Spamowanie ciastka",
                     desc: "Po przyciśnięciu ciastka samoczynnie zaczyna na nie klikać (kończy po odciśnięciu)"
                 },
+                "autoclicker": {
+                    name: "Autokliker",
+                    desc: "Auttomatycznie klika w ciastko"
+                },
                 "dev-tools": {
                     name: "Menu dewelop.",
                     desc: "Otwiera menu deweloperskie"
@@ -60,12 +64,21 @@
                 "earn-achievement": {
                     name: "Odblokuj osiągnięcie",
                     desc: "Wybierz osiągnięcie z listy i kliknij przycisk aby je zdobyć!"
+                },
+                "revoke-achievement": {
+                    name: "Usuń osiągnięcie",
+                    desc: "Wybierz osiągnięcie z listy i kliknij przycisk aby je usunąć!"
+                },
+                "finish-game": {
+                    name: "Ukończ grę",
+                    desc: "Kończy grę i odblokowywuje wszystko"
                 }
             },
             strings: {
                 "dev-tools-confirm": "Jesteś pewien? Tryb cichy nie uchroni Cię od hacków które włączycz w menu deweloperskim.",
                 "changes-as-you-type": "Wartość zmienia się jak piszesz",
-                "confirm-save-delete": "Jesteś pewien?"
+                "confirm-save-delete": "Jesteś pewien?",
+                "set-object-amount": "Ustaw ilość %s"
             }
         },
         {
@@ -79,6 +92,10 @@
                 "cookie-spam": {
                     name: "Cookie spam",
                     desc: "After holding the cookie, starts to click it automatically (ends after releasing)"
+                },
+                "autoclicker": {
+                    name: "Autoclicker",
+                    desc: "Automatically clicks cookie"
                 },
                 "dev-tools": {
                     name: "Dev menu",
@@ -94,17 +111,27 @@
                 "earn-achievement": {
                     name: "Earn achievement",
                     desc: "Select achievement from list, then click button to get it!"
+                },
+                "revoke-achievement": {
+                    name: "Remove achievement",
+                    desc: "Select achievement from list, then click button to remove it!"
+                },
+                "finish-game": {
+                    name: "Finish game",
+                    desc: "Finishes game and unlocks everything"
                 }
             },
             strings: {
                 "dev-tools-confirm": "Are you sure? Silent mode cannot prevent detecting cheats you activate in developer menu.",
                 "changes-as-you-type": "Changes as you type",
-                "confirm-save-delete": "Are you sure?"
+                "confirm-save-delete": "Are you sure?",
+                "set-object-amount": "Set %s amount"
             }
         }
     ]
 
     let lang = translations.find((lng) => lng.lang === (localStorage.getItem("cheats_lang") ?? "en"));
+    let gamePromise =  new Promise((res) => {var int = setInterval(() => {if (Game.Achievements) {clearInterval(int); res(Game);}}, 10)});
 
     document.body.append(cheatMenu);
 
@@ -112,18 +139,25 @@
     <div id="hack-menu" style="left: 10px; top: 35px;">
         <div id="hack-popup">Hack</div>
         <br>
-        <div id="hacks" style="visibility: hidden;">
-            <select id="hack-lang-select"></select>
-            <div class="hack hack-bool" id="hack-silent-mode"></div>
-            <div class="hack hack-bool" id="hack-cookie-spam"></div>
-            <div class="hack hack-btn" id="hack-dev-tools"></div>
-            <div class="hack hack-btn" id="hack-set-cookies"></div>
-            <div class="hack hack-btn" id="hack-delete-save"></div>
-            <div class="hack hack-select" id="hack-earn-achievement"></div>
+        <div id="hacks" style="display: none;">
+            <div class="hack-list" id="main-hacks">
+                <select id="hack-lang-select"></select>
+                <div class="hack hack-bool" id="hack-silent-mode"></div>
+                <div class="hack hack-bool" id="hack-cookie-spam"></div>
+                <div class="hack hack-bool" id="hack-autoclicker"></div>
+                <div class="hack hack-btn" id="hack-dev-tools"></div>
+                <div class="hack hack-btn" id="hack-set-cookies"></div>
+                <div class="hack hack-btn" id="hack-delete-save"></div>
+                <div class="hack hack-btn" id="hack-finish-game"></div>
+                <div class="hack hack-select" id="hack-earn-achievement"></div>
+                <div class="hack hack-select" id="hack-revoke-achievement"></div>
+            </div>
+            <div class="hack-list" id="objects-hacks">
+            </div>
         </div>
     </div>
     <div id="hack-tooltip" style="opacity: 0;left:0;top:0"></div>
-    <div id="hack-alert-input" style="opacity: 0;visibility: hidden;">
+    <div id="hack-alert-input" style="opacity: 0;display: none;">
         <div id="hack-alert-input-popup">
             <h1 id="hack-alert-input-popup-title"></h1>
             <div id="hack-alert-input-popup-desc"></div><br>
@@ -152,14 +186,44 @@
         #hacks {
             backdrop-filter: blur(5px);
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 10px;
             padding: 10px;
             background-color: rgba(0, 0, 0, .5);
             border-radius: 13px;
-            width: 100%;
+            width: 200%;
             box-sizing: content-box;
         }
+
+        .hack-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: content-box;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: 70vh;
+        }
+        .hack-list::-webkit-scrollbar-thumb {
+            border: 4px solid rgb(10, 87, 242);
+            background-color: rgba(10, 87, 242, .2); 
+            border-radius: 5px;
+            backdrop-filter: blur(3px);
+            box-shadow: none;
+            transition: background-color .3s linear, border .3s linear
+        }
+        .hack-list::-webkit-scrollbar-thumb:hover {
+            border: 4px solid #00a2ff;
+            background-color: rgba(0, 162, 255, .4); 
+        }
+        .hack-list::-webkit-scrollbar-track {
+            border: 4px solid black;
+            background-color: transparent;
+            border-radius: 5px;
+        }
+
         #hack-popup, .hack {
             padding: 10px;
             font-size: 20px;
@@ -287,6 +351,7 @@
     /**@type {HTMLSelectElement} */
     let $langselect = document.getElementById("hack-lang-select");
     let $hack_earnachievement =  document.getElementById("hack-earn-achievement")
+    let $hack_revokeachievement =  document.getElementById("hack-revoke-achievement")
 
     let $inputalert = {
         alert: document.getElementById("hack-alert-input"),
@@ -297,9 +362,9 @@
         ok: document.getElementById("hack-alert-input-popup-ok")
     }
 
-    let $cookie = document.getElementById("bigCookie");
+    let $objecthacks = document.getElementById("objects-hacks")
 
-    reloadLangs();
+    let $cookie = document.getElementById("bigCookie");
 
     dragElement($hackmenu, $popup);
 
@@ -313,6 +378,33 @@
             }
         }) 
     })
+
+    //populate object hacks
+    gamePromise.then(() => {
+        Object.entries(Game.Objects).forEach(entry => {
+            let [key, value] = entry;
+            let hack = document.createElement("div");
+            hack.className = "hack hack-btn";
+            hack.id = `hack-object-amount-${value.bsingle}`;
+            hack.setAttribute("lang-string", "set-object-amount");
+            hack.setAttribute("supply-val", value.dname);
+            hack.setAttribute("key", key);
+
+            hack.onclick = (e) => {
+                showInputAlert(hack.innerText, lang.strings["changes-as-you-type"], "number", value.amount, (val) => {
+                    value.amount = +val - 1;
+                    // update UI
+                    value.buyFree(1);
+                })
+            }
+
+            $objecthacks.append(hack);
+        })
+        // update language after
+        reloadLangs();
+    })
+
+    reloadLangs();
 
     //class loop
     $hackmenu.querySelectorAll(".hack").forEach(_node => {
@@ -338,11 +430,11 @@
 
     //menu hide/show
     $popup.addEventListener("click", (e) => {
-        if ($hacks.style.visibility === "hidden") {
-            $hacks.style.visibility = "visible";
+        if ($hacks.style.display === "none") {
+            $hacks.style.display = "";
             $popup.setAttribute("open", "");
         } else {
-            $hacks.style.visibility = "hidden";
+            $hacks.style.display = "none";
             $popup.removeAttribute("open");
         }
     })
@@ -388,6 +480,18 @@
         clearInterval(cookieSpamWorker);
     })
 
+    // Autoclicker hack
+    let autoclickerWorker;
+
+    document.getElementById("hack-autoclicker").addEventListener("click", (e) => 
+    {
+        let cookrect = $cookie.getBoundingClientRect();
+        if (document.getElementById("hack-autoclicker").hasAttribute("on"))
+            autoclickerWorker = setInterval(() => $cookie.dispatchEvent(new Event("click")), 0);
+        else 
+            clearInterval(autoclickerWorker);
+    })
+
     // Set cookies hack
     document.getElementById("hack-set-cookies").addEventListener("click", (e) => {
         //show input to user
@@ -412,12 +516,31 @@
         }
     });
     
-    //earn achievemenr hack
+    //earn achievement hack
     $hack_earnachievement.addEventListener("click", function (e) {
         //if clicked on select dont gain achevement
         if (e.target !== this) return;
         //gain selected achievement
         Game.Win($hack_earnachievement.querySelector("select").value)
+    })
+    //revoke achievement hack (simillar to earn)
+    $hack_revokeachievement.addEventListener("click", function (e) {
+        if (e.target !== this) return;
+        Game.RemoveAchiev($hack_revokeachievement.querySelector("select").value)
+    })
+
+    gamePromise.then(() => {
+        var ognote =  Game.Note;
+        Game.Note = function(title,desc,pic,quick)
+		{
+            var exclusionsTitle = ["Thou doth ruineth the fun!"]
+            if (exclusionsTitle.includes(title)) return;
+            ognote(title, desc, pic, quick);
+        }
+        document.getElementById("hack-finish-game").addEventListener("click", (e) => {
+            Game.RuinTheFun(true);
+
+        })
     })
 
     /**
@@ -435,7 +558,15 @@
         //for every hack
         $hackmenu.querySelectorAll(".hack").forEach(node => {
             //add value
-            node.innerText = (lang.hacks[node.id.replace("hack-", "")] ?? {name: node.id} ).name ?? node.id
+            /**@type {string} */
+            let transval = (lang.hacks[node.id.replace("hack-", "")] ?? {name: node.id} ).name;
+            if (node.hasAttribute("lang-string")) {
+                transval = lang.strings[node.getAttribute("lang-string")];
+            }
+            if (node.hasAttribute("supply-val")) {
+                transval = transval.replace("%s", node.getAttribute("supply-val"));
+            }
+            node.innerText = (transval ?? node.id ) ?? node.id
         })
 
         //support for select class
@@ -448,7 +579,7 @@
         // Earn achevement hack
 
         //when Game is avaible do
-        new Promise((res) => {var int = setInterval(() => {if (Game.Achievements) {clearInterval(int); res(Game);}}, 10)}).then(() => {
+       gamePromise.then(() => {
             // foreach achevement ingame
             Object.entries(Game.Achievements).forEach((entry) => {
                 const [key, value] = entry;
@@ -458,6 +589,7 @@
                 option.innerHTML = value.dname;
                 //add it to hack
                 $hack_earnachievement.querySelector("select").append(option);
+                $hack_revokeachievement.querySelector("select").append(option.cloneNode(true));
             });
         })
 
@@ -506,7 +638,8 @@
 
     function showInputAlert(title, desc, type, value, setter) {
         $inputalert.ok.onclick = () => {
-            setTimeout(() => $inputalert.alert.style.visibility = "hidden", 301); 
+            setTimeout(() => $inputalert.alert.style.display = "none", 301); 
+            setter($inputalert.input.value);
             $inputalert.alert.style.opacity = "0";
         }
 
@@ -517,7 +650,7 @@
         $inputalert.input.value = value.toString();
         $inputalert.input.onchange = (e) => setter($inputalert.input.value);
 
-        $inputalert.alert.style.visibility = "visible";
+        $inputalert.alert.style.display = "";
         $inputalert.alert.style.opacity = "1";
     }
 
