@@ -10,7 +10,7 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(async function() {
     'use strict';
 
     class Logger {
@@ -30,6 +30,12 @@
             Logger.LogInfo(msg);
         }
     }
+
+    Logger.LogInfo("Waiting for Game...")
+    let gamePromise =  new Promise((res) => {var int = setInterval(() => {if (Game.Achievements) {clearInterval(int); res(Game);}}, 10)});
+    await gamePromise;
+    Logger.LogInfo("Game loaded!")
+
 
     let cheatMenu = document.createElement("div");
 
@@ -131,7 +137,6 @@
     ]
 
     let lang = translations.find((lng) => lng.lang === (localStorage.getItem("cheats_lang") ?? "en"));
-    let gamePromise =  new Promise((res) => {var int = setInterval(() => {if (Game.Achievements) {clearInterval(int); res(Game);}}, 10)});
 
     document.body.append(cheatMenu);
 
