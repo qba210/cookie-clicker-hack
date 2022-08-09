@@ -141,7 +141,7 @@
     document.body.append(cheatMenu);
 
     cheatMenu.outerHTML = `
-    <div id="hack-menu" style="left: 10px; top: 35px;">
+    <div id="hack-menu" style="left: 50%; top: 35px;">
         <div id="hack-popup">Hack</div>
         <br>
         <div id="hacks" style="display: none;">
@@ -397,9 +397,8 @@
 
             hack.onclick = (e) => {
                 showInputAlert(hack.innerText, lang.strings["changes-as-you-type"], "number", value.amount, (val) => {
-                    value.amount = +val - 1;
-                    // update UI
-                    value.buyFree(1);
+                    value.getFree(+val - value.amount)
+                    value.free = 0;
                 })
             }
 
